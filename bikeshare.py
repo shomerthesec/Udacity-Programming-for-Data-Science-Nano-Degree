@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# 
+# importing the libraries
 
 import time
 import pandas as pd
@@ -12,8 +9,7 @@ CITY_DATA = { 'chicago': 'chicago.csv',
               'washington': 'washington.csv' }
 
 
-# 
-
+# creating the function to filter out the dataset
 
 def get_filters():
     """
@@ -47,7 +43,7 @@ def get_filters():
     return city, month, day
 
 
-# 
+# creating the function to load in the data
 
 
 def load_data(city, month, day):
@@ -83,7 +79,7 @@ def load_data(city, month, day):
     return df
 
 
-# 
+# creating the function that analyze the data relating to the time
 
 
 def time_stats(df):
@@ -109,7 +105,7 @@ def time_stats(df):
     print('-'*40)
 
 
-# 
+# creating the function that analyze the data relating to the station
 
 
 def station_stats(df):
@@ -134,7 +130,7 @@ def station_stats(df):
     print('-'*40)
 
 
-# 
+# creating the function that analyze the data relating to the trip duration
 
 
 def trip_duration_stats(df):
@@ -155,7 +151,7 @@ def trip_duration_stats(df):
     print('-'*40)
 
 
-# 
+# creating the function that analyze the data relating to the user data
 
 
 def user_stats(df, city):
@@ -183,8 +179,6 @@ def user_stats(df, city):
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
-
-# 
 
 
 # Extra additions for the coomand msg
@@ -252,7 +246,7 @@ def raw_data(df, point):
     return point
 
 
-# 
+# creating the main function to run on the command line
 
 
 def main():
