@@ -1,0 +1,181 @@
+explain 	# used to show how the queiry work and how much time will take
+With		# used to create tables b4 the select command to make the code easier and probably faster,{ with 'Alias1' as ( select _ from _ __ ) , 'Alias2' as ( select _ from _ _) }
+select		# col you want to print out at the end and put * to select all col
+			count( _ / * ) : to count the number of rows in one table or col if specified
+			sum( _ ) : to sum a col of desire , make sure it's full of numeric data
+			min( _ ) / max( _ ) : they work on numeric and non numeric data col
+			avg( _ ) : take s the average of a numeric col
+			distinct : will return all the distinct values in every col in the select statement
+			date_trunc : allows you to truncate your date, according to day , month and year as trunc_date( accodrding to , date col )
+			date_part  : can be useful for pulling a specific portion of a date, ( month , dow 'day of the week') with a down side that you ditch the bigger scale 'year'
+			case when _____ then _____ 'else' ____ end as __ 
+			left : used to pull specific number of char out of a col starting from the left, LEFT(phone_number, 3) 
+			right : used as left but to the right
+			length : returns number of characters for each row of a specified column, LENGTH(phone_number) 
+			strpos : used to provide the numb of char before a certain str in this case the comma, u can then use it in left of right command, STRPOS(city_state, ',') =>7 till ,
+			 	 u can also subtract 1 from the length given to take only the string without the comma
+			upper/lower : used to make the char of the col upper or lower , upper ( _ )
+			concat or '||' : to compine one or more col together , CONCAT(first_name, ' ', last_name) or with piping as first_name || ' ' || last_name.
+			replace : used to repalce a value in col with another value , replace( __ , ' ' , '') here it replaces ' ' with '' so there will be no spaces in the col name
+			TO_DATE : converts the string named col into date num , TO_DATE( month_col , 'month')
+			cast/'::' : changes the type of a col into another { CAST(date_column AS DATE) // date_column::DATE }, it converts strings only into date type data
+			TRIM : it can be used to remove characters from the beginning and end of a string. This can remove unwanted spaces at the beginning or end of a row 
+			substr : to cut a portion of a string Syntax: How to Extract a Substring From a String Value ,SUBSTR(arg, start-pos [ , steplength])  or SUBSTR( req_col FROM start-pos [FOR length])
+			COALESCE : used to convert the null values of a desired col into a desired value COALESCE( col , '..' ) as ..
+			## when using partition the numbering restards for each new  partition value, if it was id then every new id the numbering will differ
+			to create a window instead of aggregation functions {sum/whatever_statement(__) over ( partition by __ order by __ ) as .. } , you can use partition by or not use it
+			row_number : used to give a number for each row in a specified col , {row_number() over window_name as ..} 		
+			rank : gives a number for each unique value in a col, so if 2 rows have the same value it's given the same rank and the next rank is modified, used just as row_number
+			dense_rank : solves the rank issue with skipping certain ranks
+			lag : It returns the value from a previous row to the {LAG(standard_sum) OVER (ORDER BY standard_sum) AS lag}
+			LEAD : Return the value from the row following the current row in the table.
+			ntile : NTILE( number to divide by 100 for % or 4 for quartile ) over (order by desired_col ) , to find percentage of a col You can use partitions with percentiles to determine the percentile of a specific subset of all rows
+			
+from 		# the table from which the columns you want to select /// or the sub querry ( select___from __ ___ __ ) as ..
+
+
+where		# show the col meeting the required equation/statement
+		 	like : searches for string value only , like '__' , if it's a word then it will search for it 
+				if it's inside a word use '%__%', if it's only the start of the end use only one % where it allows strings 
+				before it '%__' or after it '__%'
+
+			in : works for int and string and can search for more data in a tuple form, in ( value1 , value2 )
+			not : used before like , in to find the inverse/rest of the data shown ( whole data - data shown)
+			and : used to make 2 different operations in the same where, so where .. > .. and _ in ( _ , _ )
+			between : is better and cleaner than and if and is used as a range, x>5 and x<10 ,, between 5 and 10 is much cleaner
+ 			or : used to choose the data fited to one of the statements
+			is null : to work with null values
+
+window		# it houses the (partition by order by ) used after the over command , {window _ as ( partition by _ order by _ )}
+group by	# groups the different col by one of them, like the sum of col in respect to that col lets say id
+having 		# to filter the query like where does, but in the case of aggrigated col, as where doesn't allow you to do any ooperation on aggregated col
+order by	# the col you want to order the rows by , by default it's ascending order , for descending use desc after the col
+limit 		# the num of rows you want to show
+
+
+------------------------------------------------------------------------------------------------------------
+Statement	How to Use It			Other Details
+SELECT		SELECT Col1, Col2, ...		Provide the columns you want
+FROM		FROM Table			Provide the table where the columns exist
+LIMIT		LIMIT 10			Limits based number of rows returned
+ORDER BY	ORDER BY Col			Orders table based on the column. Used with DESC.
+WHERE		WHERE Col > 5			A conditional statement to filter your results
+LIKE		WHERE Col LIKE '%me%'		Only pulls rows where column has 'me' within the text
+IN		WHERE Col IN ('Y', 'N')		A filter for only rows with column of 'Y' or 'N'
+NOT		WHERE Col NOT IN ('Y', 'N')	NOT is frequently used with LIKE and IN
+AND		WHERE Col1 > 5 AND Col2 < 3	Filter rows where two or more conditions must be true
+OR		WHERE Col1 > 5 OR Col2 < 3	Filter rows where at least one condition must be true
+BETWEEN		WHERE Col BETWEEN 3 AND 5	Often easier syntax than using an AND
+
+------------------------------------------------------------------------------------------------------------
+## INNER JOIN 
+our JOIN holds a table, and ON is a link for our PK to equal the FK.
+
+SELECT o.* , a.*  				# we can use only * to get all the data in both
+FROM accounts as a				# specify the main table or the first one to be shown in the joined-table
+JOIN orders as o				# specify the sec table to be shown in the total-table
+ON a.id = o.account_id;				# specify the cols in each table to be merged (id->id ,, person->person) but in the other table
+				notice that the col must be connceted PK and FK
+				The crow's foot shows that the FK can actually appear in many rows in the sales_reps table.
+				While the single line is telling us that the PK shows that id appears only once per row in this table.
+
+SELECT orders.standard_qty std , orders.gloss_qty gloss , 	
+       orders.poster_qty poster ,  accounts.website website , 
+       accounts.primary_poc primary
+					# to select a specific cols from each table and name them after the space
+FROM orders
+JOIN accounts
+ON orders.account_id = accounts.id		# the liking variable col
+------------------------------------------------------------------------------------------------------------------
+# notice without specifying a name for each column from other tables - not in the table's from command - it will not be visualized/shown
+# YOU CAN JOIN TWO SUB SETS
+select a.name account , r.name region , s.name sales
+from sales_reps as s 
+join region as r
+on s.region_id = r.id
+join accounts as a
+on s.id = a.sales_rep_id
+order by a.name
+-------------------------------------------------------------------------------------------------------------------
+## left join
+select distinct a.name account , r.name region , s.name sales 	# to select the unique values only
+from sales_reps as s  						# the left table or main table
+left join region as r						# the right table or the secondary table we will take from the inner elements
+on s.region_id = r.id
+join accounts as a
+on s.id = a.sales_rep_id
+order by a.name
+
+-------------------------------------------------------------------------------------------------------------
+## case statements
+SELECT account_id, CASE WHEN standard_qty = 0 OR standard_qty IS NULL THEN 0
+                        ELSE standard_amt_usd/standard_qty END AS unit_price
+FROM orders
+LIMIT 10;
+----------------------------------------------------------------------------------------------------
+ when you sum or count or do any aggrigation ooperation on a col and make it into 1 row, always u will need to group that col and specify the relation between it and other tabels
+-------------------------------------------------------------------------------------------------------
+this will return first name and sec name as col, separating by space, and to find the sec name you have to subtract the length of the name minus the length until the space from the left
+as u can't find the length until the space from the right side
+THIS CAN BE USED TO PULL OUT ANY FIRST NAME AND LAST NAME
+
+select full_names,
+left( upper(full_names), strpos(full_names,' ') ) as first_name,
+right( upper(full_names),
+      length(full_names)-strpos(full_names,' ') ) as sec_name
+from accounts
+---------------------------------------------------------------------------------------------------------
+Q:
+Imagine you're an analyst at Parch & Posey and you want to determine how the current order's total revenue ("total" meaning from sales of all types of paper) compares to the next order's total revenue.
+Modify Derek's query from the previous video in the SQL Explorer below to perform this analysis. You'll need to use occurred_at and total_amt_usd in the orders table along with LEAD to do so. In your query results, there should be four columns: occurred_at, total_amt_usd, lead, and lead_difference.
+A:
+SELECT account_id,
+       total_amt_usd,
+
+	occurred_at,
+           total_sum,
+       LEAD(total_sum) OVER (ORDER BY total_sum) AS lead,
+      ( LEAD(total_sum) OVER (ORDER BY total_sum) - total_sum ) AS lead_difference
+FROM (
+SELECT account_id, occurred_at, total_amt_usd,
+       SUM(total_amt_usd) over
+       (order by occurred_at  )AS total_sum
+  FROM orders ) sub
+--------------------------------------------------------------------------------------------------------------
+
+ntile(4) over (order by stand_sum desc)
+from( 	select account_id ,  sum(standard_qty) stand_sum 
+	group by 1) as f
+
+== 
+SELECT
+       NTILE(4) OVER (PARTITION BY account_id ORDER BY standard_qty) AS standard_quartile
+FROM orders 
+ORDER BY account_id DESC
+
+
+--------------------------------------------------------------
+Q:
+Use the NTILE functionality to divide the orders for each account into 100 levels in terms of the amount of total_amt_usd for their orders. Your resulting table should have the account_id, the occurred_at time for each order, the total amount of total_amt_usd paper purchased, and one of 100 levels in a total_percentile column.
+A:
+select account_id , occurred_at, total_amt_usd, ntile(100) over ( partition by account_id order by total_amt_usd) as total_percentile
+from orders
+order by account_id desc
+---------------------------------------------------------------------
+
+self join : to do it on any table just change the taple name and col u want
+
+SELECT we1.id AS we_id,
+       we1.account_id AS we1_account_id,
+       we1.occurred_at AS we1_occurred_at,
+       we1.channel AS we1_channel,
+       we2.id AS we2_id,
+       we2.account_id AS we2_account_id,
+       we2.occurred_at AS we2_occurred_at,
+       we2.channel AS we2_channel
+  FROM web_events we1 
+ LEFT JOIN web_events we2
+   ON we1.account_id = we2.account_id
+  AND we1.occurred_at > we2.occurred_at
+  AND we1.occurred_at <= we2.occurred_at + INTERVAL '1 day'
+ORDER BY we1.account_id, we2.occurred_at

@@ -1,0 +1,67 @@
+/*Query 1 - query used for first insight*/
+
+select 
+distinct ca.name category_name,
+count(r.rental_id) rental_count
+from category ca join film_category fc 
+on ca.category_id = fc.category_id
+join film f on fc.film_id = f.film_id
+join inventory i on f.film_id = i.film_id
+join rental r on i.inventory_id = r.inventory_id
+where ca.name in(
+'Animation', 'Children', 'Classics', 'Comedy', 'Family' ,'Music')
+group by 1
+order by category_name
+
+
+/*Query 2 - query used for second insight*/
+
+select 
+distinct
+ca.name category_name,
+sum(f.rental_duration) over (partition by ca.name order by ca.name) as total_rent
+from category ca join film_category fc 
+on ca.category_id = fc.category_id and ca.name in ('Animation', 'Children', 'Classics', 'Comedy', 'Family' ,'Music')
+join film f on fc.film_id = f.film_id
+
+
+
+/*Query 3 - query used for third insight*/
+
+with t1 as (select (first_name || ' ' || last_name) as name, 
+ c.customer_id, 
+ p.amount, 
+p.payment_date
+from customer AS c
+join payment AS p
+on c.customer_id = p.customer_id),
+
+t2 AS (SELECT 
+t1.customer_id
+FROM t1
+GROUP BY 1
+ORDER BY SUM(t1.amount) DESC
+LIMIT 10)
+
+SELECT 
+date_trunc('month', t1.payment_date) AS payment_month,
+t1.name,
+SUM(t1.amount)
+FROM t1
+JOIN t2 ON t1.customer_id = t2.customer_id
+WHERE t1.payment_date BETWEEN '20070101' AND '20080101'
+GROUP BY 2,1
+
+/*Query 4 - query used for forth insight*/
+
+select distinct
+date_trunc('month',rental_date) as Date ,
+s.store_id,
+count(rental_id) over 
+(partition by date_part('month',rental_date)
+ order by s.store_id ) as rental_count
+
+from store s
+join staff st on s.store_id = st.store_id
+join rental r on st.staff_id = r.staff_id
+order by 2, 1
